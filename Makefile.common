@@ -26,7 +26,7 @@ TARGET    ?= app
 PROJECT   ?= ESPPROJECT
 # which modules (subdirectories) of the project to include in compiling
 MODULES   += ./user
-# include dev 
+# include dev
 DEVS      := ${ROOT}/dev ${ROOT}/dev/driver ${ROOT}/dev/utils
 
 ####
@@ -131,7 +131,7 @@ APP_ROOT := $(ROOT)/apps
 ifdef APPS
   APPINCLUDES += ${foreach APP, $(APPS), ${wildcard $(APP_ROOT)/$(APP)/Makefile.$(APP)}}
   -include $(APPINCLUDES)
-  APP_DIR += $(addprefix $(APP_ROOT)/,$(APPS)) 
+  APP_DIR += $(addprefix $(APP_ROOT)/,$(APPS))
 endif
 
 ####
@@ -226,6 +226,7 @@ endif
 endif
 	# ${ROOT}/tools/serialdump-linux -b115200 ${ESPPORT}
 	# screen ${ESPPORT} 115200
+	miniterm.py /dev/ttyUSB0 115200
 
 login:
 	${ROOT}/tools/serialdump-linux -b115200 ${ESPPORT}

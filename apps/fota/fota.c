@@ -10,7 +10,7 @@
 #include "fota-info.h"
 #include "fota-util.h"
 
-#if 0
+#if 1
 #define INFO(...) os_printf(__VA_ARGS__)
 #define REPORT(...) os_printf(__VA_ARGS__)
 #else
@@ -55,6 +55,7 @@ fota_dns_found(const char *name, ip_addr_t *ipaddr, void *arg)
 LOCAL void ICACHE_FLASH_ATTR
 fota_ticktock(fota_client_t *fota_client)
 {
+  INFO("FOTA tick tock...\r\n");
   if (fota_client->status != FOTA_IDLE) {
     // INFO("FOTA is polling, quit\n");
     return;
