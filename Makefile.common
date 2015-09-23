@@ -28,6 +28,8 @@ PROJECT   ?= ESPPROJECT
 MODULES   += ./user
 # include dev
 DEVS      := ${ROOT}/dev ${ROOT}/dev/driver ${ROOT}/dev/utils
+# Debug enable
+DEBUG_ON  ?= 0
 
 ####
 #### create .version file when it's not existed yet
@@ -46,6 +48,7 @@ LIBS += c gcc hal pp phy net80211 lwip wpa main
 CFLAGS = -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH
 CFLAGS += -DVERSION='"$(VERSION)"'
 CFLAGS += -DPROJECT='"$(PROJECT)"'
+CFLAGS += -DDEBUG_ON=$(DEBUG_ON)
 
 # linker flags used to generate the main object file
 LDFLAGS   = -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static
