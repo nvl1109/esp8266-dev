@@ -13,8 +13,10 @@
 #include "fota-firmware.h"
 #include "fota-util.h"
 
-#if 0
+#if 1
+#ifndef INFO
 #define INFO(...) os_printf(__VA_ARGS__)
+#endif
 #define REPORT(...) os_printf(__VA_ARGS__)
 #else
 #define INFO(...)
@@ -31,7 +33,7 @@ handle_response(fota_client_t *fota_client)
 {
 
   INFO("Final response: %s\n", get_version_body);
-  /* parse json, get version */  
+  /* parse json, get version */
   char *n_host,
        *n_path,
        *n_version,
@@ -46,7 +48,7 @@ handle_response(fota_client_t *fota_client)
   INFO("\tPath %s\n", n_path);
   INFO("\tProtocol %s\n", n_protocol);
 
-  /* then, we have valide JSON response */  
+  /* then, we have valide JSON response */
 
   uint32_t version;
   if (convert_version(n_version, os_strlen(n_version), &version) < 0) {
@@ -56,7 +58,7 @@ handle_response(fota_client_t *fota_client)
 
   /* if we still have lastest version */
   if (version <= version_fwr) {
-    INFO("FOTA Client: We have lastest firmware (current %u.%u.%u vs online %u.%u.%u)\n", 
+    INFO("FOTA Client: We have lastest firmware (current %u.%u.%u vs online %u.%u.%u)\n",
       (version_fwr/256/256)%256, (version_fwr/256)%256, version_fwr%256,
       (version/256/256)%256, (version/256)%256, version%256);
     goto CLEAN_MEM;
@@ -87,7 +89,7 @@ get_version_recv(void *arg, char *pusrdata, unsigned short len)
   struct espconn *pespconn = arg;
   fota_client_t *fota_client = (fota_client_t *)pespconn->reverse;
 
-  // INFO("Data: %s\n", pusrdata);
+  INFO("FOTA Data: %s\n", pusrdata);
 
   /* get body */
   char *body;
@@ -99,7 +101,7 @@ get_version_recv(void *arg, char *pusrdata, unsigned short len)
       return;
     }
     // now we pass the header, set get_version_body_len to 0, begin to accumulate get_version_body
-    get_version_body_len = 0;   // 
+    get_version_body_len = 0;   //
     body = body+4;    // get rid of \r\n\r\n
   }
   else {
@@ -113,7 +115,7 @@ get_version_recv(void *arg, char *pusrdata, unsigned short len)
     return;
   }
   os_memcpy(&get_version_body[get_version_body_len], body, bodylen);
-  get_version_body_len += bodylen; 
+  get_version_body_len += bodylen;
   get_version_body[get_version_body_len] = '\0';
 }
 
@@ -209,6 +211,8 @@ get_version_connect_cb(void *arg)
   struct espconn *pespconn = (struct espconn *)arg;
   fota_client_t *fota_client = (fota_client_t *)pespconn->reverse;
 
+  INFO("FOTA connected\r\n");
+
   espconn_regist_recvcb(pespconn, get_version_recv);
   espconn_regist_sentcb(pespconn, get_version_sent_cb);
 
@@ -219,21 +223,22 @@ get_version_connect_cb(void *arg)
   else if(system_upgrade_userbin_check() == UPGRADE_FW_BIN2) {
     os_memcpy(user_bin, "image1", os_strlen("image1"));
   }
+  INFO("FOTA user_bin: %s\r\n", user_bin);
 
   char *temp = NULL;
   temp = (uint8 *) os_zalloc(512);
 
-  os_sprintf(temp, "GET /api/%s/versions/%s HTTP/1.0\r\nHost: %s\r\n"pHeadStatic""pHeadAuthen"\r\n",
+  os_sprintf(temp, "GET /api/%s/versions/%s?current_version=%s HTTP/1.0\r\nHost: %s\r\n"pHeadStatic""pHeadAuthen"\r\n",
     PROJECT,
     user_bin,
+    VERSION,
     fota_client->host,
     // fota_client->uuid,   //pHeaderAuthen
     fota_client->token
-    // FOTA_CLIENT
-    // VERSION
+    // FOTA_CLIENT,
     );
 
-  // INFO("request: %s\n", temp);
+  INFO("FOTA request: %s\n", temp);
 
   if (FOTA_SECURE)
     espconn_secure_sent(pespconn, temp, os_strlen(temp));

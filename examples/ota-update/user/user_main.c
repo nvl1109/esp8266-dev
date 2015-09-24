@@ -46,7 +46,7 @@ void user_init(void)
 {
   gpio_init();
   uart_init(BIT_RATE_115200, BIT_RATE_115200);
-  os_delay_us(1000000);
+  os_delay_us(100000);
 
   // Information
   os_printf("\n");

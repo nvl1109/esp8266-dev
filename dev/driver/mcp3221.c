@@ -7,7 +7,9 @@
 
 #if 1
 #define DEBUG(...)
+#ifndef INFO
 #define INFO(...)
+#endif
 #else
 #define DEBUG(...) os_printf(__VA_ARGS__)
 #define INFO(...) os_printf(__VA_ARGS__)

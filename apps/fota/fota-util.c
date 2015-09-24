@@ -13,8 +13,10 @@
 #define FAILED    -1
 #define SUCCESS   0
 
-#if 0
+#if 1
+#ifndef INFO
 #define INFO(...) os_printf(__VA_ARGS__)
+#endif
 #define REPORT(...) os_printf(__VA_ARGS__)
 #else
 #define INFO(...)
@@ -67,12 +69,12 @@ parse_fota(const char *json, uint32_t len, char **version, char **host, char **p
     INFO("Failed to parse JSON: %d\n", r);
     return FAILED;
   }
-  // Assume the top-level element is an object 
+  // Assume the top-level element is an object
   if (r < 1 || tok[0].type != JSMN_OBJECT) {
     INFO("Object expected\n");
     return FAILED;
   }
-  // Loop over all keys of the root object 
+  // Loop over all keys of the root object
   for (i = 1; i < r; i++) {
     if (jsoneq(json, &tok[i], "last") == 0) {
       // We expect groups to be an object

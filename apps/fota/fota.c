@@ -11,7 +11,9 @@
 #include "fota-util.h"
 
 #if 1
+#ifndef INFO
 #define INFO(...) os_printf(__VA_ARGS__)
+#endif
 #define REPORT(...) os_printf(__VA_ARGS__)
 #else
 #define INFO(...)
